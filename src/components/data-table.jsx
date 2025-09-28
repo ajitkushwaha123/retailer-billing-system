@@ -163,7 +163,7 @@ const systemColumns = [
 
 function DraggableRow({ row }) {
   const { transform, transition, setNodeRef, isDragging } = useSortable({
-    id: row.original.id,
+    id: row.original._id,
   });
 
   return (
@@ -215,6 +215,8 @@ export function DataTable({ data: initialData, columnConfig }) {
               {value}
             </Badge>
           );
+        case "image":
+          return <img src={value} />;
         case "status":
           return (
             <Badge variant="outline" className="text-muted-foreground px-1.5">
@@ -270,7 +272,7 @@ export function DataTable({ data: initialData, columnConfig }) {
       columnFilters,
       pagination,
     },
-    getRowId: (row) => row.id.toString(),
+    getRowId: (row) => row._id.toString(),
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
@@ -408,7 +410,7 @@ export function DataTable({ data: initialData, columnConfig }) {
                     strategy={verticalListSortingStrategy}
                   >
                     {table.getRowModel().rows.map((row) => (
-                      <DraggableRow key={row.id} row={row} />
+                      <DraggableRow key={row._id} row={row} />
                     ))}
                   </SortableContext>
                 ) : (

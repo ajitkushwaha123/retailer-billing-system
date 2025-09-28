@@ -59,7 +59,7 @@ const data = {
       icon: IconChartBar,
     },
     {
-      title: "Projects",
+      title: "Billing",
       url: "#",
       icon: IconFolder,
     },

@@ -7,19 +7,19 @@ const initialState = {
   error: null,
 };
 
+// Thunk to fetch products by organizationId
 export const fetchProducts = createAsyncThunk(
   "products/fetchProducts",
   async (organizationId, { rejectWithValue }) => {
     try {
-
-      console.log("Fetching products for organization ID (thunk):", organizationId);
+      console.log("Fetching products for organization ID:", organizationId);
 
       const response = await axios.get(
         `/api/organization/${organizationId}/products`
       );
 
       console.log("Fetched products:", response.data);
-      return response.data.data;
+      return response.data.data; 
     } catch (error) {
       return rejectWithValue(
         error.response?.data?.message || "Failed to fetch products"
@@ -31,7 +31,13 @@ export const fetchProducts = createAsyncThunk(
 const productSlice = createSlice({
   name: "products",
   initialState,
-  reducers: {},
+  reducers: {
+    resetProducts: (state) => {
+      state.products = [];
+      state.error = null;
+      state.isLoading = false;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchProducts.pending, (state) => {
@@ -49,4 +55,5 @@ const productSlice = createSlice({
   },
 });
 
+export const { resetProducts } = productSlice.actions;
 export default productSlice.reducer;
