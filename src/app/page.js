@@ -1,7 +1,7 @@
 import { ChartAreaInteractive } from "@/components/chart-area-interactive";
 import { DataTable } from "@/components/data-table";
 import { SectionCards } from "@/components/section-cards";
-import data from "@/app/(root)/dashboard/data.json";
+// import data from "@/app/(root)/dashboard/data.json";
 
 export default function Page() {
   const columnConfig = [
@@ -37,7 +37,7 @@ export default function Page() {
           <div className="px-4 lg:px-6">
             <ChartAreaInteractive />
           </div>
-          <DataTable data={data} columnConfig={columnConfig} />
+          {/* <DataTable data={data} columnConfig={columnConfig} /> */}
         </div>
       </div>
     </div>
