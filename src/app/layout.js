@@ -1,12 +1,5 @@
 import { Poppins } from "next/font/google";
 import "./globals.css";
-import { ClerkProvider } from "@clerk/nextjs";
-import { AuthProvider } from "@/lib/auth/context";
-import { SiteHeader } from "@/components/site-header";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/app-sidebar";
-import { Provider } from "react-redux";
-import { store } from "@/store";
 import AppShell from "@/components/global/app-shell";
 
 const poppins = Poppins({
