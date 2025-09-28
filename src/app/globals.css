@@ -66,6 +66,10 @@ body {
   display: none;
 }
 
+.cl-internal-1dauvpw {
+    display: none;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
