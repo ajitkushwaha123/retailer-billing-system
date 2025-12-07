@@ -32,14 +32,14 @@ export const ProductCard = ({ product }) => {
   return (
     <Card className="w-full rounded-md m-0 shadow-md border border-gray-100 hover:shadow-xl transition-all duration-300">
       <CardContent className="flex flex-col">
-        <div className="relative w-full min-h-24 md:h-48 flex items-center justify-center bg-gray-50 rounded-sm overflow-hidden group">
+        <div className="relative w-full min-h-24  flex items-center justify-center bg-gray-50 rounded-sm overflow-hidden group">
           <img
             src={
               product?.imageUrl ||
               "https://i.pinimg.com/1200x/d9/c3/c3/d9c3c3197bf7b789812f5eebd2069877.jpg"
             }
             alt={product?.title}
-            className="w-full h-full object-cover max-h-24 md:max-h-48 transition-transform duration-300 group-hover:scale-105"
+            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
           />
           {/* {product?.discount && (
             <Badge className="absolute top-2 left-2 bg-orange-500 text-white px-2 py-0.5 text-xs font-medium rounded">

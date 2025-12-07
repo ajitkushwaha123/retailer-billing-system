@@ -15,7 +15,7 @@ export function SiteHeader() {
         />
 
         <Breadcrumbs />
-        <div className="ml-auto flex items-center gap-2">
+        <div className="ml-auto hidden md:flex items-center gap-2">
           <Button variant="ghost" asChild size="sm" className="hidden sm:flex">
             <OrganizationSwitcher />
           </Button>

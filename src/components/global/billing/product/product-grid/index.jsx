@@ -3,9 +3,18 @@
 import React from "react";
 import { ProductCard } from "../card";
 
-export default function ProductGrid({ products = [] }) {
+export default function ProductGrid({ products = [], isSidebarOpen }) {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 p-3 md:p-5 gap-4 lg:grid-cols-3">
+    <div
+      className={`
+        grid 
+        grid-cols-2
+        sm:grid-cols-2 
+        md:grid-cols-2 
+        lg:grid-cols-${isSidebarOpen ? "3" : "4"} 
+        p-3 md:p-5 gap-4
+      `}
+    >
       {products.map((product, index) => (
         <ProductCard key={index} product={product} />
       ))}
