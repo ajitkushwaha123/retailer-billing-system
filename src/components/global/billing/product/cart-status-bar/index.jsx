@@ -10,7 +10,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { CustomerDialog } from "../dialog/customer-dialog";
+import { CustomerCartSheet } from "../dialog/customer-dialog";
 
 export const CartStatusBar = () => {
   const {
@@ -47,7 +47,7 @@ export const CartStatusBar = () => {
                 </span>
               )}
             </div>
-            
+
             <div>
               <p className="text-sm font-medium">{totalQuantity} items</p>
               <p className="text-xs text-gray-500">
@@ -123,27 +123,24 @@ export const CartStatusBar = () => {
               </div>
             ))}
           </div>
-          
+
           <div className="mt-3 flex justify-between items-center">
             <p className="text-sm font-medium">
               Total: {formatToINR(totalAmount)}
             </p>
-            {/* <Button className="bg-green-500 hover:bg-green-600 text-white">
-              Checkout
-            </Button> */}
-            <CustomerDialog />
+
+            <CustomerCartSheet items={items} totalAmount={totalAmount} />
           </div>
         </PopoverContent>
       </Popover>
-      
+
       {/* <Button
         className="bg-green-500 hover:bg-green-600 text-white font-medium px-4 py-2 rounded-lg"
         onClick={() => console.log("Proceed to checkout")}
       >
         Checkout
       </Button> */}
-
-      <CustomerDialog />
+      <CustomerCartSheet items={items} totalAmount={totalAmount} />
     </div>
   );
 };

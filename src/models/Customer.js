@@ -4,24 +4,15 @@ const customerSchema = new mongoose.Schema(
   {
     name: String,
     phone: String,
-    email: String,
-    billingAddress: {
-      line1: String,
-      line2: String,
-      city: String,
-      state: String,
-      pincode: String,
-      country: { type: String, default: "India" },
-    },
-    shippingAddress: {
-      line1: String,
-      line2: String,
-      city: String,
-      state: String,
-      pincode: String,
-      country: { type: String, default: "India" },
+    orgId: {
+      type: String,
+      required: true,
     },
     loyaltyPoints: { type: Number, default: 0 },
+    createdBy: {
+      type: String,
+      required: true,
+    },
   },
   { timestamps: true }
 );

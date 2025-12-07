@@ -67,7 +67,7 @@ body {
 }
 
 .cl-internal-1dauvpw {
-    display: none;
+  display: none;
 }
 
 @theme inline {
@@ -148,5 +148,24 @@ body {
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+/* global.css */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  #bill-to-print,
+  #bill-to-print * {
+    visibility: visible;
+  }
+
+  #bill-to-print {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
   }
 }

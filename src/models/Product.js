@@ -2,25 +2,25 @@ import mongoose from "mongoose";
 
 const ProductSchema = new mongoose.Schema(
   {
-    title: { type: String, required: true }, // e.g. "Amul Milk"
+    title: { type: String, required: true }, 
     description: { type: String },
 
-    price: { type: Number, required: true }, // selling price
-    mrp: { type: Number }, // optional MRP (Maximum Retail Price)
-    discount: { type: Number, default: 0 }, // discount in %
+    price: { type: Number, required: true }, 
+    mrp: { type: Number }, 
+    discount: { type: Number, default: 0 },
 
     stock: { type: Number, required: true, default: 0 },
-    unit: { type: String, required: true }, // e.g. "kg", "g", "L", "ml", "pcs"
-    weight: { type: Number }, // numeric weight/volume (e.g. 500)
+    unit: { type: String, required: true }, 
+    weight: { type: Number }, 
 
-    category: { type: String }, // e.g. "Dairy", "Vegetables"
-    brand: { type: String }, // e.g. "Amul"
+    category: { type: String }, 
+    brand: { type: String }, 
 
     sku: { type: String, unique: true },
-    barcode: { type: String }, // optional barcode / UPC
+    barcode: { type: String },
 
     imageUrl: { type: String },
-    gallery: [{ type: String }], // multiple images
+    gallery: [{ type: String }], 
 
     tags: [{ type: String }],
 

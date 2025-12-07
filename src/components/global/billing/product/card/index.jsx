@@ -41,11 +41,11 @@ export const ProductCard = ({ product }) => {
             alt={product?.title}
             className="w-full h-full object-cover max-h-24 md:max-h-48 transition-transform duration-300 group-hover:scale-105"
           />
-          {product?.discount && (
+          {/* {product?.discount && (
             <Badge className="absolute top-2 left-2 bg-orange-500 text-white px-2 py-0.5 text-xs font-medium rounded">
               {product.discount}% OFF
             </Badge>
-          )}
+          )} */}
 
           <div className="flex absolute bottom-0 right-0 md:hidden items-center gap-2">
             {quantity === 0 ? (
