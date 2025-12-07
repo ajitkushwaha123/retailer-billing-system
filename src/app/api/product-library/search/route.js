@@ -5,23 +5,28 @@ import { NextResponse } from "next/server";
 export const GET = async (req) => {
   try {
     await dbConnect();
+
     const { searchParams } = new URL(req.url);
 
     const page = parseInt(searchParams.get("page") || "1", 10);
     const limit = parseInt(searchParams.get("limit") || "10", 10);
+    const search = searchParams.get("search") || "";
     const skip = (page - 1) * limit;
 
-    const products = await AllProduct.find({
-      isActive: true,
-    });
-    const slicedProducts = products.slice(skip, skip + limit);
+    const filter = search ? { title: { $regex: search, $options: "i" } } : {};
 
-    const total = products.length;
+    const total = await AllProduct.countDocuments(filter);
+
+    const products = await AllProduct.find(filter)
+      .skip(skip)
+      .limit(limit)
+      .lean();
+
     const totalPages = Math.ceil(total / limit);
 
     return NextResponse.json(
       {
-        products: slicedProducts,
+        products,
         pagination: {
           total,
           page,
@@ -30,7 +35,9 @@ export const GET = async (req) => {
           hasNextPage: page < totalPages,
           hasPrevPage: page > 1,
         },
-        message: "Products fetched successfully (sliced)",
+        message: search
+          ? `Search results for "${search}"`
+          : "Products fetched successfully",
       },
       { status: 200 }
     );

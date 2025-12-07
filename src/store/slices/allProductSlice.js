@@ -13,10 +13,9 @@ const initialState = {
   },
   isLoading: false,
   error: null,
-  addingProductIds: [], // track products being added to org
+  addingProductIds: [],
 };
 
-// Thunk to fetch all products with pagination
 export const fetchAllProducts = createAsyncThunk(
   "products/fetchAllProducts",
   async ({ page = 1, limit = 10 } = {}, { rejectWithValue }) => {
@@ -24,10 +23,26 @@ export const fetchAllProducts = createAsyncThunk(
       const response = await axios.get(
         `/api/product-library?page=${page}&limit=${limit}`
       );
-      return response.data; // { products, pagination }
+      return response.data;
     } catch (error) {
       return rejectWithValue(
         error.response?.data?.message || "Failed to fetch products"
+      );
+    }
+  }
+);
+
+export const searchProducts = createAsyncThunk(
+  "products/searchProducts",
+  async ({ search = "", page = 1, limit = 10 }, { rejectWithValue }) => {
+    try {
+      const response = await axios.get(
+        `/api/product-library/search?search=${search}&page=${page}&limit=${limit}`
+      );
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to search products"
       );
     }
   }
@@ -61,9 +76,9 @@ const allProductSlice = createSlice({
       state.addingProductIds = [];
     },
   },
+
   extraReducers: (builder) => {
     builder
-      // Fetch all products
       .addCase(fetchAllProducts.pending, (state) => {
         state.isLoading = true;
         state.error = null;
@@ -78,14 +93,27 @@ const allProductSlice = createSlice({
         state.error = action.payload;
       })
 
-      // Add product to organization
+      .addCase(searchProducts.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(searchProducts.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.products = action.payload.products;
+        state.pagination = action.payload.pagination;
+      })
+      .addCase(searchProducts.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+
       .addCase(addProductToOrg.pending, (state, action) => {
-        state.addingProductIds.push(action.meta.arg); // mark as adding
+        state.addingProductIds.push(action.meta.arg);
       })
       .addCase(addProductToOrg.fulfilled, (state, action) => {
         const index = state.addingProductIds.indexOf(action.payload.productId);
-        if (index > -1) state.addingProductIds.splice(index, 1); // remove from adding
-        // Mark product as added to org in state
+        if (index > -1) state.addingProductIds.splice(index, 1);
+
         const product = state.products.find(
           (p) => p._id === action.payload.productId
         );
@@ -93,7 +121,7 @@ const allProductSlice = createSlice({
       })
       .addCase(addProductToOrg.rejected, (state, action) => {
         const index = state.addingProductIds.indexOf(action.meta.arg);
-        if (index > -1) state.addingProductIds.splice(index, 1); // remove from adding
+        if (index > -1) state.addingProductIds.splice(index, 1);
         state.error = action.payload;
       });
   },

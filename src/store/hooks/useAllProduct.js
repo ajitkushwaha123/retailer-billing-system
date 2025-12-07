@@ -1,7 +1,7 @@
-import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchAllProducts,
+  searchProducts,
   resetProducts,
   addProductToOrg as addProductToOrgThunk,
 } from "@/store/slices/allProductSlice";
@@ -12,17 +12,18 @@ export const useAllProducts = (page = 1, limit = 10) => {
   const { products, pagination, isLoading, error, addingProductIds } =
     useSelector((state) => state.allProducts);
 
-  // Clear all products
   const clearProducts = () => {
     dispatch(resetProducts());
   };
 
-  // Manual fetch (optional)
   const getAllProducts = () => {
     dispatch(fetchAllProducts({ page, limit }));
   };
 
-  // Add product to organization
+  const searchAllProducts = (searchValue) => {
+    dispatch(searchProducts({ search: searchValue, page, limit }));
+  };
+
   const addProductToOrg = async (productId) => {
     try {
       const resultAction = await dispatch(addProductToOrgThunk(productId));
@@ -37,7 +38,6 @@ export const useAllProducts = (page = 1, limit = 10) => {
     }
   };
 
-  // Check if a product is being added
   const isAdding = (productId) => addingProductIds.includes(productId);
 
   return {
@@ -49,5 +49,6 @@ export const useAllProducts = (page = 1, limit = 10) => {
     addProductToOrg,
     isAdding,
     getAllProducts,
+    searchAllProducts,
   };
 };

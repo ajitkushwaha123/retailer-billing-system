@@ -34,7 +34,7 @@ import {
 } from "@/components/ui/sidebar";
 import { TeamSwitcher } from "./team-switcher";
 import { useOrganization } from "@clerk/nextjs";
-import { GalleryVerticalEnd } from "lucide-react";
+import { GalleryVerticalEnd, Library } from "lucide-react";
 
 const data = {
   user: {
@@ -48,6 +48,12 @@ const data = {
     //   url: "#",
     //   icon: IconDashboard,
     // },
+
+    {
+      title: "Billing",
+      url: "/billing",
+      icon: IconFolder,
+    },
     {
       title: "Products",
       url: "/products",
@@ -59,14 +65,19 @@ const data = {
       icon: IconChartBar,
     },
     {
-      title: "Billing",
-      url: "/billing",
-      icon: IconFolder,
-    },
-    {
       title: "Team",
       url: "/team",
       icon: IconUsers,
+    },
+    {
+      title: "Products",
+      url: "/products",
+      icon: IconListDetails,
+    },
+    {
+      title: "Product Library",
+      url: "/product-library",
+      icon: Library,
     },
   ],
   // navClouds: [
@@ -182,8 +193,6 @@ export function AppSidebar({ ...props }) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavDocuments items={data.documents} />
-        <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={data.user} />

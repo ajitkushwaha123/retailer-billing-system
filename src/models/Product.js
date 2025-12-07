@@ -2,33 +2,33 @@ import mongoose from "mongoose";
 
 const ProductSchema = new mongoose.Schema(
   {
-    title: { type: String, required: true }, 
+    title: { type: String, required: true },
     description: { type: String },
 
-    price: { type: Number, required: true }, 
-    mrp: { type: Number }, 
+    price: { type: Number, required: true },
+    mrp: { type: Number },
     discount: { type: Number, default: 0 },
 
     stock: { type: Number, required: true, default: 0 },
-    unit: { type: String, required: true }, 
-    weight: { type: Number }, 
+    unit: { type: String, required: true },
+    weight: { type: Number },
 
-    category: { type: String }, 
-    brand: { type: String }, 
+    category: { type: String },
+    brand: { type: String },
 
-    sku: { type: String, unique: true },
+    sku: { type: String, required: true },
     barcode: { type: String },
 
     imageUrl: { type: String },
-    gallery: [{ type: String }], 
+    gallery: [{ type: String }],
 
     tags: [{ type: String }],
 
     isActive: { type: Boolean, default: true },
 
-    expiryDate: { type: Date }, 
+    expiryDate: { type: Date },
     manufactureDate: { type: Date },
-    shelfLife: { type: String }, 
+    shelfLife: { type: String },
 
     metadata: { type: mongoose.Schema.Types.Mixed },
 
@@ -39,6 +39,8 @@ const ProductSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+ProductSchema.index({ organizationId: 1, sku: 1 }, { unique: true });
 
 const Product =
   mongoose.models.Product || mongoose.model("Product", ProductSchema);

@@ -16,6 +16,7 @@ import {
 import { useRouter } from "next/navigation";
 import BillPrintView from "../bill";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import PaymentQRSection from "../payment/PaymentQrSection";
 
 export default function OrderBeautifulCard({ order }) {
   const [showAllItems, setShowAllItems] = useState(false);
@@ -127,14 +128,8 @@ export default function OrderBeautifulCard({ order }) {
           </DialogContent>
         </Dialog>
 
-        {/* Conditional Pay Button */}
         {order.paymentStatus === "pending" && (
-          <Button
-            onClick={goToPay}
-            className="flex-1 bg-orange-600 hover:bg-orange-700"
-          >
-            Pay Now
-          </Button>
+          <PaymentQRSection order={order} />
         )}
       </div>
     </Card>

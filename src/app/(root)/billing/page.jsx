@@ -6,9 +6,10 @@ import { useProduct } from "@/store/hooks/useProduct";
 import { useOrganization } from "@clerk/nextjs";
 import React, { useEffect, useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
+import Loading from "@/components/loading";
 
 const Page = () => {
-  const { products, getProductByOrganization } = useProduct();
+  const { products, getProductByOrganization, isLoading } = useProduct();
   const { organization } = useOrganization();
 
   const [selectedCategory, setSelectedCategory] = useState("all");
@@ -79,7 +80,7 @@ const Page = () => {
 
       <div className="flex-1 overflow-y-scroll h-full">
         <CartStatusBar />
-        <ProductGrid products={filteredProducts} />
+        {isLoading ? <Loading /> : <ProductGrid products={filteredProducts} />}
       </div>
     </div>
   );
