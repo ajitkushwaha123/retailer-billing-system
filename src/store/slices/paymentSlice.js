@@ -45,18 +45,19 @@ export const createPaymentLink = createAsyncThunk(
 export const sendPaymentReminder = createAsyncThunk(
   "payment/sendPaymentReminder",
   async (
-    { phone, customerName, amount, dueDate, storeName },
+    { phone, customerName, amount, dueDate, storeName, paymentLink },
     { rejectWithValue }
   ) => {
     try {
       const payload = {
         phone,
-        type: "payment_reminder",
+        type: "payment_reminder_with_payment_links_new",
         data: {
           customerName,
           amount,
           dueDate,
           storeName,
+          paymentLink,
         },
       };
 

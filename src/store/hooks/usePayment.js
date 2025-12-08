@@ -42,10 +42,27 @@ export function usePayment() {
     amount,
     dueDate,
     storeName,
+    paymentLink,
   }) => {
+    console.log("usePayment - sendReminder called with:", {
+      phone,
+      customerName,
+      amount,
+      dueDate,
+      storeName,
+      paymentLink,
+    });
+    
     dispatch(
-      sendPaymentReminder({ phone, customerName, amount, dueDate, storeName })
-    );
+      sendPaymentReminder({
+        phone,
+        customerName,
+        amount,
+        dueDate,
+        storeName,
+        paymentLink,
+      })
+    ).unwrap();
   };
 
   /** Reset Reminder State after notification */

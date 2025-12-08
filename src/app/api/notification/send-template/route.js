@@ -5,69 +5,89 @@ import { NextResponse } from "next/server";
 
 const TEMPLATE_TYPES = {
   ORDER_DETAILS: "order_details",
-  PAYMENT_REMINDER: "payment_reminder_with_payment_links",
+  PAYMENT_REMINDER: "payment_reminder_with_payment_links_new",
+};
+
+const extractPaymentId = (url) => {
+  try {
+    if (!url) return "";
+
+    const parts = url.split("/");
+    return parts[parts.length - 1];
+  } catch {
+    return "";
+  }
 };
 
 const buildPayload = (type, phone, data) => {
-  switch (type) {
-    case TEMPLATE_TYPES.ORDER_DETAILS:
-      return {
-        messaging_product: "whatsapp",
-        to: phone,
-        type: "template",
-        template: {
-          name: TEMPLATE_TYPES.ORDER_DETAILS,
-          language: { code: "en" },
-          components: [
-            {
-              type: "header",
-              parameters: [
-                { type: "text", text: data.storeName }, // {{1}}
-              ],
-            },
-            {
-              type: "body",
-              parameters: [
-                { type: "text", text: data.customerName }, // {{1}}
-                { type: "text", text: data.items }, // {{2}}
-                { type: "text", text: String(data.totalAmount) }, // {{3}}
-                { type: "text", text: data.paymentStatus }, // {{4}}
-              ],
-            },
-          ],
-        },
-      };
-
-    case TEMPLATE_TYPES.PAYMENT_REMINDER:
-      return {
-        messaging_product: "whatsapp",
-        to: phone,
-        type: "template",
-        template: {
-          name: TEMPLATE_TYPES.PAYMENT_REMINDER,
-          language: { code: "en_US" },
-          components: [
-            {
-              type: "header",
-              parameters: [
-                { type: "text", text: data.storeName }, // {{1}}
-              ],
-            },
-            {
-              type: "body",
-              parameters: [
-                { type: "text", text: data.customerName }, // {{1}}
-                { type: "text", text: String(data.amount) }, // {{2}}
-                { type: "text", text: data.dueDate }, // {{3}}
-              ],
-            },
-          ],
-        },
-      };
-
-    default:
-      return null;
+  if (type === TEMPLATE_TYPES.ORDER_DETAILS) {
+    return {
+      messaging_product: "whatsapp",
+      to: phone,
+      type: "template",
+      template: {
+        name: TEMPLATE_TYPES.ORDER_DETAILS,
+        language: { code: "en" },
+        components: [
+          {
+            type: "header",
+            parameters: [{ type: "text", text: data.storeName }],
+          },
+          {
+            type: "body",
+            parameters: [
+              { type: "text", text: data.customerName },
+              { type: "text", text: data.items },
+              { type: "text", text: String(data.totalAmount) },
+              { type: "text", text: data.paymentStatus },
+            ],
+          },
+        ],
+      },
+    };
   }
+
+  if (type === TEMPLATE_TYPES.PAYMENT_REMINDER) {
+    const paymentLinkId = extractPaymentId(data.paymentLink);
+
+    return {
+      messaging_product: "whatsapp",
+      to: phone,
+      type: "template",
+      template: {
+        name: TEMPLATE_TYPES.PAYMENT_REMINDER,
+        language: { code: "en_US" },
+
+        components: [
+          {
+            type: "header",
+            parameters: [{ type: "text", text: data.storeName }],
+          },
+          {
+            type: "body",
+            parameters: [
+              { type: "text", text: data.customerName },
+              { type: "text", text: String(data.amount) },
+              { type: "text", text: data.dueDate },
+            ],
+          },
+          {
+            type: "button",
+            sub_type: "url",
+            index: "0",
+            parameters: [
+              {
+                type: "text",
+                text: paymentLinkId, // 👈 ONLY ID SENT
+              },
+            ],
+          },
+        ],
+      },
+    };
+  }
+
+  return null;
 };
 
 export async function POST(req) {
