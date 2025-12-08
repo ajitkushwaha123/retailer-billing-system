@@ -12,17 +12,46 @@ import {
   User2,
   ChevronDown,
   ChevronUp,
+  LinkIcon,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import BillPrintView from "../bill";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import PaymentQRSection from "../payment/PaymentQrSection";
+import { usePayment } from "@/store/hooks/usePayment";
+import { useOrganization } from "@clerk/nextjs";
 
 export default function OrderBeautifulCard({ order }) {
   const [showAllItems, setShowAllItems] = useState(false);
   const router = useRouter();
+  const { organization } = useOrganization();
 
-  const goToPay = () => router.push(`/payment/${order._id}`);
+  const { sendReminder, reminderStatus, generatePaymentLink, status } =
+    usePayment();
+
+  const formattedDate = new Date(order.createdAt).toLocaleString("en-IN", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  });
+
+  const handleReminderSend = () => {
+    sendReminder({
+      phone: order.customerId?.phone,
+      customerName: order.customerId?.name,
+      amount: order.total,
+      dueDate: order.createdAt,
+      storeName: organization?.name || "Our Store",
+    });
+  };
+
+  const handleGenerateLink = () => {
+    generatePaymentLink({
+      name: order.customerId?.name,
+      phone: order.customerId?.phone,
+      amount: order.total,
+      orderId: order._id,
+    });
+  };
 
   const statusColors = {
     pending: "bg-yellow-100 text-yellow-700 border border-yellow-200",
@@ -36,14 +65,9 @@ export default function OrderBeautifulCard({ order }) {
     failed: "bg-red-100 text-red-700 border border-red-200",
   };
 
-  const formattedDate = new Date(order.createdAt).toLocaleString("en-IN", {
-    dateStyle: "medium",
-    timeStyle: "short",
-  });
-
   return (
     <Card className="p-5 hover:shadow-xl transition-all duration-200 bg-white border border-gray-200 rounded-2xl">
-      {/* -------- Header ---------- */}
+      {/* HEADER */}
       <div className="flex justify-between items-start mb-3">
         <h2 className="text-lg font-semibold leading-none">
           Order #{order._id?.slice(-6)}
@@ -53,14 +77,13 @@ export default function OrderBeautifulCard({ order }) {
           <Badge className={statusColors[order.status] || ""}>
             {order.status?.toUpperCase()}
           </Badge>
-
           <Badge className={paymentColors[order.paymentStatus] || ""}>
             {order.paymentStatus?.toUpperCase()}
           </Badge>
         </div>
       </div>
 
-      {/* -------- Customer Details ---------- */}
+      {/* CUSTOMER INFO */}
       <div className="space-y-1 text-sm text-gray-700 mt-4 pb-3 border-b">
         <div className="flex items-center gap-2">
           <User2 size={16} className="text-gray-500" />
@@ -78,7 +101,7 @@ export default function OrderBeautifulCard({ order }) {
         </div>
       </div>
 
-      {/* -------- Order summary ---------- */}
+      {/* ORDER SUMMARY */}
       <div className="flex justify-between mt-4 text-sm">
         <div className="flex items-center gap-2">
           <ShoppingBag size={18} className="text-gray-600" />
@@ -91,7 +114,7 @@ export default function OrderBeautifulCard({ order }) {
         </div>
       </div>
 
-      {/* -------- Items List ---------- */}
+      {/* ITEMS LIST */}
       <div className="mt-3 text-sm text-gray-700 bg-gray-50 rounded-lg p-3 transition-all">
         {(showAllItems ? order.items : order.items?.slice(0, 2))?.map(
           (item, index) => (
@@ -116,9 +139,8 @@ export default function OrderBeautifulCard({ order }) {
         )}
       </div>
 
-      {/* -------- Footer Actions ---------- */}
-      <div className="flex gap-2 mt-5">
-        {/* View Bill */}
+      {/* ACTION BUTTONS */}
+      <div className="flex gap-2 mt-5 flex-col md:flex-row">
         <Dialog>
           <DialogTrigger asChild>
             <Button className="flex-1">View Bill</Button>
@@ -128,8 +150,34 @@ export default function OrderBeautifulCard({ order }) {
           </DialogContent>
         </Dialog>
 
+        {/* PAYMENT ACTIONS */}
         {order.paymentStatus === "pending" && (
-          <PaymentQRSection order={order} />
+          <>
+            {/* Show generate link first */}
+            {!order.paymentLink || order.paymentLink === "" ? (
+              <Button
+                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
+                onClick={handleGenerateLink}
+                disabled={status === "loading"}
+              >
+                {status === "loading"
+                  ? "Generating..."
+                  : "Generate Payment Link"}
+              </Button>
+            ) : (
+              <Button
+                className="flex-1 bg-orange-600 hover:bg-orange-700 text-white"
+                disabled={reminderStatus === "loading"}
+                onClick={handleReminderSend}
+              >
+                {reminderStatus === "loading"
+                  ? "Sending..."
+                  : reminderStatus === "success"
+                  ? "Reminder Sent ✓"
+                  : "Send Payment Reminder"}
+              </Button>
+            )}
+          </>
         )}
       </div>
     </Card>

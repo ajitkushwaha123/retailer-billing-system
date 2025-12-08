@@ -6,7 +6,6 @@ import { NextResponse } from "next/server";
 export const POST = async (req, { params }) => {
   try {
     const { productId } = await params;
-
     const { userId, orgId } = await auth();
 
     if (!orgId) {
@@ -16,41 +15,60 @@ export const POST = async (req, { params }) => {
       );
     }
 
-    const product = await AllProduct.findById(productId);
-    if (!product) {
+    const masterProduct = await AllProduct.findById(productId);
+    if (!masterProduct) {
       return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
 
-    const newProduct = new Product({
-      userId,
+    const existingProduct = await Product.findOne({
       organizationId: orgId,
-      title: product.title,
-      description: product.description,
-      price: product.price,
-      mrp: product.mrp || product.price,
-      discount: product.discount || 0,
-      stock: product.stock || 0,
-      unit: product.unit || "pcs",
-      weight: product.weight || null,
-      category: product.category || "",
-      brand: product.brand || "",
-      sku: product.sku || "",
-      barcode: product.barcode || "",
-      imageUrl: product.imageUrl || "",
-      gallery: product.gallery || [],
-      tags: product.tags || [],
-      isActive: product.isActive !== undefined ? product.isActive : true,
-      expiryDate: product.expiryDate || null,
-      manufactureDate: product.manufactureDate || null,
-      shelfLife: product.shelfLife || "",
-      metadata: product.metadata || {},
+      sku: masterProduct.sku,
     });
 
+    const productData = {
+      userId,
+      organizationId: orgId,
+      title: masterProduct.title,
+      description: masterProduct.description,
+      price: masterProduct.price,
+      mrp: masterProduct.mrp || masterProduct.price,
+      discount: masterProduct.discount || 0,
+      stock: masterProduct.stock || 0,
+      unit: masterProduct.unit || "pcs",
+      weight: masterProduct.weight || null,
+      category: masterProduct.category || "",
+      brand: masterProduct.brand || "",
+      sku: masterProduct.sku || "",
+      barcode: masterProduct.barcode || "",
+      imageUrl: masterProduct.imageUrl || "",
+      gallery: masterProduct.gallery || [],
+      tags: masterProduct.tags || [],
+      isActive:
+        masterProduct.isActive !== undefined ? masterProduct.isActive : true,
+      expiryDate: masterProduct.expiryDate || null,
+      manufactureDate: masterProduct.manufactureDate || null,
+      shelfLife: masterProduct.shelfLife || "",
+      metadata: masterProduct.metadata || {},
+    };
+
+    if (existingProduct) {
+      await Product.updateOne({ _id: existingProduct._id }, productData);
+
+      return NextResponse.json({
+        message: "Product updated successfully",
+        type: "updated",
+      });
+    }
+
+    const newProduct = new Product(productData);
     await newProduct.save();
 
-    return NextResponse.json({ message: "Product added successfully" });
+    return NextResponse.json({
+      message: "Product added successfully",
+      type: "created",
+    });
   } catch (err) {
-    console.error(err);
+    console.error("PRODUCT_ADD_ERROR:", err);
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 }

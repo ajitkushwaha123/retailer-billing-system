@@ -1,52 +1,65 @@
+"use server";
+
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
 import Order from "@/models/Order";
-import Bill from "@/models/Bill";
 import { auth } from "@clerk/nextjs/server";
 import { Customer } from "@/models/Customer";
-
-function generateBillNumber() {
-  const prefix = "KRV";
-  const year = new Date().getFullYear();
-  const random = Math.floor(100000 + Math.random() * 900000);
-  return `${prefix}-${year}-${random}`;
-}
+import axios from "axios";
 
 export async function POST(req) {
   try {
     await dbConnect();
 
+    // Authenticate user
     const { userId, orgId } = await auth();
-
-    if (!userId) {
+    if (!userId || !orgId) {
       return NextResponse.json(
-        { message: "Unauthorized user" },
+        { message: "Unauthorized access" },
         { status: 401 }
       );
     }
 
     const body = await req.json();
+
+    // Validate required fields
     const {
+      storeName,
       customerName,
       customerPhone,
       paymentMethod,
       paymentStatus,
       items,
       subtotal,
-      tax,
-      discount,
+      tax = 0,
+      discount = 0,
       total,
     } = body;
 
-    if (!customerPhone || !customerName || !items || items.length === 0) {
+    if (
+      !customerName ||
+      !customerPhone ||
+      !Array.isArray(items) ||
+      items.length === 0
+    ) {
       return NextResponse.json(
-        { message: "Missing required fields" },
+        {
+          message:
+            "Missing required fields: customerName, customerPhone, or items",
+        },
         { status: 400 }
       );
     }
 
-    let customer = await Customer.findOne({ phone: customerPhone, orgId });
+    if (typeof total !== "number" || total <= 0) {
+      return NextResponse.json(
+        { message: "Invalid total amount" },
+        { status: 400 }
+      );
+    }
 
+    // Create or find customer
+    let customer = await Customer.findOne({ phone: customerPhone, orgId });
     if (!customer) {
       customer = await Customer.create({
         name: customerName,
@@ -56,6 +69,7 @@ export async function POST(req) {
       });
     }
 
+    // Create order
     const newOrder = await Order.create({
       customerId: customer._id,
       items,
@@ -63,34 +77,39 @@ export async function POST(req) {
       tax,
       discount,
       total,
-      paymentStatus,
-      paymentMethod,
+      paymentStatus: paymentStatus || "pending",
+      paymentMethod: paymentMethod || "cash",
       userId,
       orgId,
-      status: "pending",
+      status: "completed",
     });
 
-    const billNumber = generateBillNumber();
-
-    const bill = await Bill.create({
-      billNumber,
-      orderId: newOrder._id,
-      customerName,
-      customerPhone,
-      items,
-      subtotal,
-      tax,
-      discount,
-      total,
-      userId,
-      orgId,
-    });
+    // Send WhatsApp notification (optional, wrapped in try/catch)
+    try {
+      await axios.post(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/notification/send-template`,
+        {
+          phone: customerPhone,
+          type: "order_details",
+          data: {
+            storeName: storeName || process.env.STORE_NAME || "Our Store",
+            customerName,
+            items: items
+              .map((item) => `${item.name} (x${item.quantity})`)
+              .join(", "),
+            totalAmount: total.toFixed(2),
+            paymentStatus: paymentStatus || "Pending",
+          },
+        }
+      );
+    } catch (waError) {
+      console.warn("Failed to send WhatsApp notification:", waError?.message);
+    }
 
     return NextResponse.json(
       {
-        message: "Order & Bill created successfully",
+        message: "Order created successfully",
         orderId: newOrder._id,
-        billId: bill.billNumber,
       },
       { status: 201 }
     );
@@ -103,10 +122,9 @@ export async function POST(req) {
   }
 }
 
-export async function GET() {
+export async function GET(req) {
   try {
     await dbConnect();
-
     const { userId, orgId } = await auth();
 
     if (!userId) {
@@ -114,16 +132,12 @@ export async function GET() {
     }
 
     const query = orgId ? { orgId } : { userId };
-
     const orders = await Order.find(query)
-      .populate("customerId")
+      .populate("customerId", "name phone")
       .sort({ createdAt: -1 });
 
     return NextResponse.json(
-      {
-        message: "Orders fetched",
-        orders,
-      },
+      { message: "Orders fetched successfully", orders },
       { status: 200 }
     );
   } catch (error) {

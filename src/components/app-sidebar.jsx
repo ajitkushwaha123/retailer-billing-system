@@ -55,8 +55,8 @@ const data = {
       icon: IconFolder,
     },
     {
-      title: "Products",
-      url: "/products",
+      title: "Orders",
+      url: "/orders",
       icon: IconListDetails,
     },
     {

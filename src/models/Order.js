@@ -38,7 +38,7 @@ const OrderSchema = new mongoose.Schema(
 
     paymentMethod: {
       type: String,
-      enum: ["cash", "online", "other"],
+      enum: ["cash", "online", "udhaar"],
       required: true,
     },
 
@@ -56,6 +56,8 @@ const OrderSchema = new mongoose.Schema(
 
     userId: { type: String, required: true },
     orgId: { type: String, required: true },
+
+    paymentLink : { type: String },
   },
   {
     timestamps: true,
@@ -67,7 +69,6 @@ OrderSchema.index({ orgId: 1 });
 OrderSchema.index({ customerId: 1 });
 OrderSchema.index({ createdAt: -1 });
 
-// ===== Auto-ensure subtotal fallback if missing =====
 OrderSchema.pre("validate", function (next) {
   if (!this.subtotal && Array.isArray(this.items)) {
     this.subtotal = this.items.reduce(

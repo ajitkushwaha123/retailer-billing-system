@@ -1,24 +1,75 @@
 import { useDispatch, useSelector } from "react-redux";
-import { createPaymentQR, clearPayment } from "@/store/slices/paymentSlice";
+import {
+  createPaymentQR,
+  createPaymentLink,
+  clearPayment,
+  sendPaymentReminder,
+  clearReminder,
+} from "@/store/slices/paymentSlice";
 
 export function usePayment() {
   const dispatch = useDispatch();
 
-  const { qr, status, error } = useSelector((state) => state.payment);
+  const {
+    qr,
+    paymentLink,
+    customer,
+    status,
+    error,
+    reminderStatus,
+    reminderError,
+  } = useSelector((state) => state.payment);
 
+  /** Generate QR Payment */
   const generatePayment = (payload) => {
     dispatch(createPaymentQR(payload));
   };
 
+  /** Generate Link Payment */
+  const generatePaymentLink = (payload) => {
+    dispatch(createPaymentLink(payload));
+  };
+
+  /** Reset QR & Link */
   const resetPayment = () => {
     dispatch(clearPayment());
   };
 
+  /** Send Reminder Template */
+  const sendReminder = ({
+    phone,
+    customerName,
+    amount,
+    dueDate,
+    storeName,
+  }) => {
+    dispatch(
+      sendPaymentReminder({ phone, customerName, amount, dueDate, storeName })
+    );
+  };
+
+  /** Reset Reminder State after notification */
+  const resetReminder = () => {
+    dispatch(clearReminder());
+  };
+
   return {
+    /** QR & Payment Link STATE */
     qr,
+    paymentLink,
+    customer,
     status,
     error,
+
+    /** REMINDER STATE */
+    reminderStatus,
+    reminderError,
+
+    /** ACTIONS */
     generatePayment,
+    generatePaymentLink,
     resetPayment,
+    sendReminder,
+    resetReminder,
   };
 }

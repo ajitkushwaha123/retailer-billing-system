@@ -1,141 +1,64 @@
+"use server";
+
 import axios from "axios";
 import { NextResponse } from "next/server";
 
 const TEMPLATE_TYPES = {
-  ORDER_PLACED: "order_placed_template",
-  PAYMENT_PENDING: "payment_pending_template",
-  ORDER_DELIVERED: "order_delivered_offer_template",
-  VIEW_CATALOGUE: "view_catalogue_template",
-  SPECIAL_OFFER: "order_completed_offer_for_second_visit",
+  ORDER_DETAILS: "order_details",
+  PAYMENT_REMINDER: "payment_reminder",
 };
 
 const buildPayload = (type, phone, data) => {
   switch (type) {
-    case TEMPLATE_TYPES.SPECIAL_OFFER:
+    case TEMPLATE_TYPES.ORDER_DETAILS:
       return {
         messaging_product: "whatsapp",
         to: phone,
         type: "template",
         template: {
-          name: "order_completed_offer_for_second_visit",
-          language: { code: "en_US" },
+          name: TEMPLATE_TYPES.ORDER_DETAILS,
+          language: { code: "en" },
           components: [
             {
-              type: "body",
+              type: "header",
               parameters: [
-                { type: "text", text: data.name },
-                { type: "text", text: data.orderId },
-                { type: "text", text: data.couponCode },
-                { type: "text", text: data.expiryDate },
+                { type: "text", text: data.storeName }, // {{1}}
               ],
             },
             {
-              type: "button",
-              sub_type: "copy_code",
-              index: 0,
+              type: "body",
               parameters: [
-                {
-                  type: "text",
-                  text: data.couponCode,
-                },
+                { type: "text", text: data.customerName }, // {{1}}
+                { type: "text", text: data.items }, // {{2}}
+                { type: "text", text: String(data.totalAmount) }, // {{3}}
+                { type: "text", text: data.paymentStatus }, // {{4}}
               ],
             },
           ],
         },
       };
 
-    case TEMPLATE_TYPES.ORDER_PLACED:
+    case TEMPLATE_TYPES.PAYMENT_REMINDER:
       return {
         messaging_product: "whatsapp",
         to: phone,
         type: "template",
         template: {
-          name: "order_placed_template",
+          name: TEMPLATE_TYPES.PAYMENT_REMINDER,
           language: { code: "en_US" },
           components: [
             {
-              type: "body",
+              type: "header",
               parameters: [
-                { type: "text", text: data.customerName },
-                { type: "text", text: data.orderId },
-                { type: "text", text: data.totalAmount },
-              ],
-            },
-          ],
-        },
-      };
-
-    case TEMPLATE_TYPES.PAYMENT_PENDING:
-      return {
-        messaging_product: "whatsapp",
-        to: phone,
-        type: "template",
-        template: {
-          name: "payment_pending_template",
-          language: { code: "en_US" },
-          components: [
-            {
-              type: "body",
-              parameters: [
-                { type: "text", text: data.customerName },
-                {
-                  type: "text",
-                  text: data.paymentLink,
-                },
-              ],
-            },
-          ],
-        },
-      };
-
-    case TEMPLATE_TYPES.ORDER_DELIVERED:
-      return {
-        messaging_product: "whatsapp",
-        to: phone,
-        type: "template",
-        template: {
-          name: "order_delivered_offer_template",
-          language: { code: "en_US" },
-          components: [
-            {
-              type: "body",
-              parameters: [
-                { type: "text", text: data.customerName },
-                { type: "text", text: data.discountText },
-                { type: "text", text: data.catalogueUrl },
-              ],
-            },
-          ],
-        },
-      };
-
-    case TEMPLATE_TYPES.VIEW_CATALOGUE:
-      return {
-        messaging_product: "whatsapp",
-        to: phone,
-        type: "template",
-        template: {
-          name: "view_catalogue_template",
-          language: { code: "en_US" },
-          components: [
-            {
-              type: "body",
-              parameters: [
-                {
-                  type: "text",
-                  text: data.caption || "Click below to view catalogue",
-                },
+                { type: "text", text: data.storeName }, // {{1}}
               ],
             },
             {
-              type: "button",
-              sub_type: "url",
-              index: 0,
+              type: "body",
               parameters: [
-                {
-                  type: "text",
-                  text: data.catalogueUrl,
-                },
+                { type: "text", text: data.customerName }, // {{1}}
+                { type: "text", text: String(data.amount) }, // {{2}}
+                { type: "text", text: data.dueDate }, // {{3}}
               ],
             },
           ],
@@ -149,20 +72,23 @@ const buildPayload = (type, phone, data) => {
 
 export async function POST(req) {
   try {
-    const { phone, type, data } = await req.json();
+    let { phone, type, data } = await req.json();
 
-    if (!phone || !type) {
+    if (!phone || !type || !data) {
       return NextResponse.json(
-        { message: "phone and type are required" },
+        { message: "phone, type, and data are required" },
         { status: 400 }
       );
     }
+
+    phone = phone.replace(/\D/g, "");
+    if (!phone.startsWith("91")) phone = `91${phone}`;
 
     const payload = buildPayload(type, phone, data);
 
     if (!payload) {
       return NextResponse.json(
-        { message: "Invalid template type" },
+        { message: "Invalid template type or missing data" },
         { status: 422 }
       );
     }
@@ -183,7 +109,7 @@ export async function POST(req) {
       { status: 200 }
     );
   } catch (error) {
-    console.log("WA_ERROR", error?.response?.data || error.message);
+    console.error("WA_ERROR", error?.response?.data || error.message);
     return NextResponse.json(
       {
         message: "Failed to send WhatsApp notification",
