@@ -6,8 +6,7 @@ export const POST = async (req) => {
   try {
     await dbConnect();
 
-    const body = await req.json();
-    const { barcode } = body || {};
+    const { barcode } = await req.json();
 
     if (!barcode) {
       return NextResponse.json(
