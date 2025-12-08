@@ -1,8 +1,10 @@
+import dbConnect from "@/lib/dbConnect";
 import BardcodeReader from "@/models/BardcodeReader";
 import { NextResponse } from "next/server";
 
 export const POST = async (req) => {
   try {
+    await dbConnect();
     const { barcode } = await req.json();
     if (!barcode) {
       return NextResponse.json(
