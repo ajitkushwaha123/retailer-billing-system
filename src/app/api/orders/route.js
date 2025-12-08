@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
 import Order from "@/models/Order";
 import { auth } from "@clerk/nextjs/server";
-import { Customer } from "@/models/Customer";
+import Customer from "@/models/Customer";
 import axios from "axios";
 
 export async function POST(req) {
