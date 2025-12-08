@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 
 const TEMPLATE_TYPES = {
   ORDER_DETAILS: "order_details",
-  PAYMENT_REMINDER: "payment_reminder",
+  PAYMENT_REMINDER: "payment_reminder_with_payment_links",
 };
 
 const buildPayload = (type, phone, data) => {
