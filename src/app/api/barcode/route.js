@@ -1,28 +1,36 @@
 import dbConnect from "@/lib/dbConnect";
-import BardcodeReader from "@/models/BardcodeReader";
+import BarcodeReader from "@/models/BarcodeReader";
 import { NextResponse } from "next/server";
 
 export const POST = async (req) => {
   try {
     await dbConnect();
-    const { barcode } = await req.json();
+
+    const body = await req.json();
+    const { barcode } = body || {};
+
     if (!barcode) {
       return NextResponse.json(
-        { error: "Barcode is required" },
+        { success: false, message: "Barcode is required" },
         { status: 400 }
       );
     }
 
-    const newBarcode = new BardcodeReader({ barcode });
-    await newBarcode.save();
+    const barcodeDoc = await BarcodeReader.create({ barcode });
 
     return NextResponse.json(
-      { message: "Barcode saved successfully", data: newBarcode },
+      {
+        success: true,
+        message: "Barcode saved successfully",
+        data: barcodeDoc,
+      },
       { status: 201 }
     );
-  } catch (err) {
+  } catch (error) {
+    console.error("Barcode save error:", error);
+
     return NextResponse.json(
-      { error: "Internal Server Error" },
+      { success: false, message: "Internal server error" },
       { status: 500 }
     );
   }
