@@ -13,14 +13,12 @@ import {
 import { formatToINR } from "@/helper/transform";
 import { useDashboard } from "@/store/hooks/useDashboard";
 
-export function SectionCards() {
+export function SectionCards({ range }) {
   // Fetch dashboard stats
-  const { summary, growth, loading, error } = useDashboard({
-    startDate: "2025-01-01",
-    endDate: "2025-01-31",
-  });
+  const { summary, growth, loading, error } = useDashboard();
 
-  // Helper to display badge with growth value and icon
+  console.log("Dashboard Summary:", summary);
+
   const renderGrowthBadge = (value) => {
     const isPositive = value >= 0;
     const Icon = isPositive ? IconTrendingUp : IconTrendingDown;
@@ -33,9 +31,9 @@ export function SectionCards() {
     );
   };
 
-  if (error) {
-    return <div className="text-red-500">Failed to load dashboard data</div>;
-  }
+  // if (error) {
+  //   return <div className="text-red-500">Failed to load dashboard data</div>;
+  // }
 
   return (
     <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 px-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-4">

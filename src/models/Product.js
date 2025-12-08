@@ -31,6 +31,7 @@ const ProductSchema = new mongoose.Schema(
     shelfLife: { type: String },
 
     metadata: { type: mongoose.Schema.Types.Mixed },
+    totalSold: { type: Number, default: 0 },
 
     organizationId: { type: String, required: true },
     userId: { type: String, required: true },

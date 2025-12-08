@@ -3,6 +3,7 @@ import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { OrganizationSwitcher } from "@clerk/nextjs";
 import { Breadcrumbs } from "./breadcrumb";
+import DateRangePicker from "@/components/dashboard/date-range-picker";
 
 export function SiteHeader() {
   return (
@@ -15,10 +16,8 @@ export function SiteHeader() {
         />
 
         <Breadcrumbs />
-        <div className="ml-auto hidden md:flex items-center gap-2">
-          <Button variant="ghost" asChild size="sm" className="hidden sm:flex">
-            <OrganizationSwitcher />
-          </Button>
+        <div className="ml-auto flex justify-center mt-2 hidden md:flex items-center gap-2">
+          <DateRangePicker />
         </div>
       </div>
     </header>

@@ -6,6 +6,7 @@ import Order from "@/models/Order";
 import { auth } from "@clerk/nextjs/server";
 import Customer from "@/models/Customer";
 import axios from "axios";
+import Product from "@/models/Product";
 
 export async function POST(req) {
   try {
@@ -22,7 +23,6 @@ export async function POST(req) {
 
     const body = await req.json();
 
-    // Validate required fields
     const {
       storeName,
       customerName,
@@ -58,7 +58,7 @@ export async function POST(req) {
       );
     }
 
-    // Create or find customer
+    // Find or create customer
     let customer = await Customer.findOne({ phone: customerPhone, orgId });
     if (!customer) {
       customer = await Customer.create({
@@ -84,7 +84,32 @@ export async function POST(req) {
       status: "completed",
     });
 
-    // Send WhatsApp notification (optional, wrapped in try/catch)
+    // 🟡 UPDATE STOCK & SOLD COUNT
+    for (const item of items) {
+      const product = await Product.findOne({
+        _id: item.productId,
+        organizationId: orgId,
+      });
+
+      console.log("Updating product stock for:", item.productId);
+      if (!product) continue;
+
+      const updatedStock = product.stock - item.quantity;
+
+      await Product.updateOne(
+        { _id: item.productId, organizationId: orgId },
+        {
+          $set: {
+            stock: updatedStock < 0 ? 0 : updatedStock,
+          },
+          $inc: {
+            totalSold: item.quantity,
+          },
+        }
+      );
+    }
+
+    // Send WhatsApp message (non-blocking)
     try {
       await axios.post(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/notification/send-template`,
@@ -103,13 +128,13 @@ export async function POST(req) {
         }
       );
     } catch (waError) {
-      console.warn("Failed to send WhatsApp notification:", waError?.message);
+      console.warn("WhatsApp sending failed:", waError?.message);
     }
 
     return NextResponse.json(
       {
         message: "Order created successfully",
-        orderId: newOrder._id,
+        order: newOrder,
       },
       { status: 201 }
     );
@@ -132,6 +157,7 @@ export async function GET(req) {
     }
 
     const query = orgId ? { orgId } : { userId };
+
     const orders = await Order.find(query)
       .populate("customerId", "name phone")
       .sort({ createdAt: -1 });
