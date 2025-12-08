@@ -6,10 +6,6 @@ import { auth } from "@clerk/nextjs/server";
 export async function GET(req) {
   try {
     await dbConnect();
-
-    const { searchParams } = new URL(req.url);
-    const startDate = searchParams.get("startDate");
-    const endDate = searchParams.get("endDate");
     const { orgId: organizationId } = await auth();
 
     if (!organizationId) {
@@ -19,35 +15,25 @@ export async function GET(req) {
       );
     }
 
+    // Filter only by organization
     const filter = { organizationId };
 
-    if (startDate && endDate) {
-      filter.createdAt = {
-        $gte: new Date(startDate),
-        $lte: new Date(endDate),
-      };
-    }
-
+    // 5 most selling products
     const topSold = await Product.find(filter)
       .sort({ totalSold: -1 })
       .limit(5)
       .select("title totalSold price sku imageUrl");
 
-    const topStock = await Product.find(filter)
-      .sort({ stock: -1 })
+    // 5 lowest stock products
+    const lowStock = await Product.find(filter)
+      .sort({ stock: 1 }) // ascending order → lowest first
       .limit(5)
       .select("title stock price sku imageUrl");
-
-    const topPrice = await Product.find(filter)
-      .sort({ price: -1 })
-      .limit(5)
-      .select("title price sku imageUrl stock");
 
     return NextResponse.json({
       data: {
         topSold,
-        topStock,
-        topPrice,
+        lowStock,
       },
       status: "success",
     });

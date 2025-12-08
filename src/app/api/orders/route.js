@@ -160,7 +160,8 @@ export async function GET(req) {
 
     const orders = await Order.find(query)
       .populate("customerId", "name phone")
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .limit(100);
 
     return NextResponse.json(
       { message: "Orders fetched successfully", orders },

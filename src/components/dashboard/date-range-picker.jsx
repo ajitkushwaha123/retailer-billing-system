@@ -7,6 +7,7 @@ import {
   fetchDashboardStats,
   fetchPaymentMethods,
   fetchProductStats,
+  fetchSalesChart,
   setDateRange,
 } from "@/store/slices/dashboardSlice";
 
@@ -36,6 +37,7 @@ export default function DateRangePicker() {
     dispatch(fetchDashboardStats({ startDate: start, endDate: end }));
     dispatch(fetchProductStats({ startDate: start, endDate: end }));
     dispatch(fetchPaymentMethods({ startDate: start, endDate: end }));
+    dispatch(fetchSalesChart({ startDate: start, endDate: end }));
   };
 
   useEffect(() => {

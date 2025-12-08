@@ -4,16 +4,13 @@ import React from "react";
 import { useDashboard } from "@/store/hooks/useDashboard";
 import { Package, TrendingUp, AlertTriangle } from "lucide-react";
 
-export default function ProductStats({ range }) {
-  const startDate = range?.startDate;
-  const endDate = range?.endDate;
-
+export default function ProductStats({}) {
   const {
     topSellingProducts = [],
     lowStockProducts = [],
     loading,
     error,
-  } = useDashboard({ startDate, endDate });
+  } = useDashboard();
 
   if (loading) {
     return (

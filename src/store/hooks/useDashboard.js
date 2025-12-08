@@ -17,6 +17,7 @@ export const useDashboard = () => {
     lowStockProducts,
     loading,
     error,
+    salesChartData,
   } = useSelector((state) => state.dashboard);
 
   const refetch = () => {
@@ -31,6 +32,7 @@ export const useDashboard = () => {
     paymentMethods,
     topSellingProducts,
     lowStockProducts,
+    salesChartData,
     loading,
     error,
     refetch,

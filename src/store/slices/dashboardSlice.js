@@ -1,7 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-// 🌀 Thunk for fetching dashboard stats
 export const fetchDashboardStats = createAsyncThunk(
   "dashboard/fetchDashboardStats",
   async (_, { rejectWithValue, getState }) => {
@@ -21,7 +20,6 @@ export const fetchDashboardStats = createAsyncThunk(
   }
 );
 
-// 🌀 Thunk for fetching product stats
 export const fetchProductStats = createAsyncThunk(
   "dashboard/fetchProductStats",
   async (_, { rejectWithValue, getState }) => {
@@ -44,7 +42,6 @@ export const fetchProductStats = createAsyncThunk(
   }
 );
 
-// 🌀 Payment methods does NOT depend on range
 export const fetchPaymentMethods = createAsyncThunk(
   "dashboard/fetchPaymentMethods",
   async (_, { rejectWithValue, getState }) => {
@@ -54,6 +51,26 @@ export const fetchPaymentMethods = createAsyncThunk(
       const res = await axios.get("/api/dashboard/payment-method", {
         params: { startDate: start, endDate: end },
       });
+      return res.data.data || [];
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || error.message || "Something went wrong"
+      );
+    }
+  }
+);
+
+// ⭐ NEW — Fetch sales chart stats
+export const fetchSalesChart = createAsyncThunk(
+  "dashboard/fetchSalesChart",
+  async (_, { rejectWithValue, getState }) => {
+    try {
+      const { start, end } = getState().dashboard.range;
+
+      const res = await axios.get("/api/dashboard/sales-chart", {
+        params: { startDate: start, endDate: end },
+      });
+
       return res.data.data || [];
     } catch (error) {
       return rejectWithValue(
@@ -77,6 +94,7 @@ const dashboardSlice = createSlice({
     paymentMethods: [],
     topSellingProducts: [],
     lowStockProducts: [],
+    salesChartData: [], // ⭐ Add this
     loading: false,
     error: null,
   },
@@ -94,6 +112,7 @@ const dashboardSlice = createSlice({
       state.paymentMethods = [];
       state.topSellingProducts = [];
       state.lowStockProducts = [];
+      state.salesChartData = [];
       state.loading = false;
       state.error = null;
     },
@@ -101,14 +120,14 @@ const dashboardSlice = createSlice({
     setDateRange: (state, action) => {
       state.range.start = action.payload.start || null;
       state.range.end = action.payload.end || null;
-      // reset product stats when range changes
       state.topSellingProducts = [];
       state.lowStockProducts = [];
+      state.salesChartData = [];
     },
   },
 
   extraReducers: (builder) => {
-    // Dashboard stats
+    // TOTAL REVENUE
     builder
       .addCase(fetchDashboardStats.pending, (state) => {
         state.loading = true;
@@ -116,35 +135,31 @@ const dashboardSlice = createSlice({
       })
       .addCase(fetchDashboardStats.fulfilled, (state, action) => {
         state.loading = false;
-        state.range.start = action.payload.range.start;
-        state.range.end = action.payload.range.end;
         state.summary = action.payload.summary;
       })
       .addCase(fetchDashboardStats.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload || "Failed to load dashboard stats";
+        state.error = action.payload;
       });
 
-    // Payment method stats
+    // PAYMENT METHODS
     builder
       .addCase(fetchPaymentMethods.pending, (state) => {
         state.loading = true;
-        state.error = null;
       })
       .addCase(fetchPaymentMethods.fulfilled, (state, action) => {
         state.loading = false;
-        state.paymentMethods = action.payload || [];
+        state.paymentMethods = action.payload;
       })
       .addCase(fetchPaymentMethods.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload || "Failed to load payment methods";
+        state.error = action.payload;
       });
 
-    // Product stats (Top selling + Low stock)
+    // PRODUCT STATS
     builder
       .addCase(fetchProductStats.pending, (state) => {
         state.loading = true;
-        state.error = null;
       })
       .addCase(fetchProductStats.fulfilled, (state, action) => {
         state.loading = false;
@@ -153,8 +168,21 @@ const dashboardSlice = createSlice({
       })
       .addCase(fetchProductStats.rejected, (state, action) => {
         state.loading = false;
-        state.error =
-          action.payload || "Failed to load top selling or low stock products";
+        state.error = action.payload;
+      });
+
+    // ⭐ SALES CHART
+    builder
+      .addCase(fetchSalesChart.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchSalesChart.fulfilled, (state, action) => {
+        state.loading = false;
+        state.salesChartData = action.payload;
+      })
+      .addCase(fetchSalesChart.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });
