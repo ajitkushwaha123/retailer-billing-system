@@ -18,6 +18,7 @@ export function SiteHeader() {
         <Breadcrumbs />
         <div className="ml-auto flex justify-center mt-2 hidden md:flex items-center gap-2">
           <DateRangePicker />
+          <OrganizationSwitcher />
         </div>
       </div>
     </header>
