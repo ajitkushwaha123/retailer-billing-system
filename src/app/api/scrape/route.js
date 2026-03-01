@@ -18,7 +18,7 @@ export const GET = async (req) => {
       Cookie:
         "_ga=GA1.1.618256562.1764011972; _ga_8HE6Y2HT51=GS2.1.s1764617218$o1$g0$t1764617218$j60$l0$h0; _ga_FJQ5LTF1T0=GS2.1.s1764672374$o3$g1$t1764673547$j60$l0$h0; _gid=GA1.2.218404478.1764617219",
       Authorization:
-        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJDb250ZXh0IjpudWxsLCJJZGVudGl0eSI6eyJjbGllbnQiOiJjb25zdW1lciIsImlkIjoyMDA4OTQ2LCJ1c2VyYXV0aGlkIjoxMzQ4MTE0fSwiZXhwIjoxNzY5ODU2NDA2LCJqdGkiOiI2MGU0NTdhZi0yYTkyLTRmZjEtYTU3ZS01MmE2MDQ4YmQyOGIiLCJpYXQiOjE3NjQ2NzI0MDZ9.kbXf8ZvrIVfiyy5t8d0_IU-XboE7ikl2LRVQs2lzkIg",
+        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJDb250ZXh0IjpudWxsLCJJZGVudGl0eSI6eyJjbGllbnQiOiJjb25zdW1lciIsImlkIjoyMDA4OTQ2LCJ1c2VyYXV0aGlkIjoxMzQ4MTE0fSwiZXhwIjoxNzc3NDUyNDk2LCJqdGkiOiJlYzU5ODQzZS0xMGQxLTRlNWMtOTZkYy1lZDA5ZjJkN2RjZWUiLCJpYXQiOjE3NzIyNjg0OTZ9.FXdgFvL4RL753ATPtlL500tgKqfluf0474PLyV6ZCdQ",
       "sec-ch-ua-platform": '"Windows"',
       "sec-ch-ua":
         '"Chromium";v="142", "Google Chrome";v="142", "Not_A Brand";v="99"',

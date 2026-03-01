@@ -1,4 +1,5 @@
 import dbConnect from "@/lib/dbConnect";
+import { getSocket } from "@/lib/socket";
 import Product from "@/models/Product";
 import { NextResponse } from "next/server";
 
@@ -17,14 +18,15 @@ export const GET = async (req, { params }) => {
         },
         {
           status: 400,
-        }
+        },
       );
     }
 
-    const products = await Product.find({
-      organizationId,
-    }).sort({ createdAt: -1 });
-
+    const products = await Product.find(
+      { organizationId },
+      { __v: 0, createdAt: 0, updatedAt: 0, metadata: 0 },
+    ).sort({ createdAt: -1 });
+    
     return NextResponse.json(
       {
         message: "Products fetched successfully",
@@ -33,7 +35,7 @@ export const GET = async (req, { params }) => {
       },
       {
         status: 200,
-      }
+      },
     );
   } catch (err) {
     return NextResponse.json(
@@ -43,7 +45,7 @@ export const GET = async (req, { params }) => {
       },
       {
         status: 500,
-      }
+      },
     );
   }
 };
