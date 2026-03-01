@@ -21,7 +21,7 @@ export const POST = async (req) => {
     );
 
     if (!product) {
-      await fetch("http://localhost:4000/emit", {
+      await fetch("https://e209-14-139-226-237.ngrok-free.app/emit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -39,7 +39,7 @@ export const POST = async (req) => {
       );
     }
 
-    await fetch("http://localhost:4000/emit", {
+    await fetch("https://e209-14-139-226-237.ngrok-free.app/emit", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
