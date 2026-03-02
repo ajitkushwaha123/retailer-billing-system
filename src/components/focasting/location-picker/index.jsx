@@ -1,12 +1,19 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+
 export default function LocationPicker() {
   const [location, setLocation] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const hasAutoDetected = useRef(false);
+
+  // Default location fallback
+  const DEFAULT_LOCATION = {
+    lat: 28.60943933609405,
+    lon: 77.03761652309917,
+  };
 
   useEffect(() => {
     const saved = localStorage.getItem("user_location");
@@ -24,7 +31,9 @@ export default function LocationPicker() {
 
   const detectLocation = () => {
     if (!navigator.geolocation) {
-      setError("Geolocation not supported");
+      setError("Geolocation not supported, using default location");
+      setLocation(DEFAULT_LOCATION);
+      localStorage.setItem("user_location", JSON.stringify(DEFAULT_LOCATION));
       return;
     }
 
@@ -43,7 +52,9 @@ export default function LocationPicker() {
         setLoading(false);
       },
       () => {
-        setError("Location permission denied");
+        setError("Location permission denied, using default location");
+        setLocation(DEFAULT_LOCATION);
+        localStorage.setItem("user_location", JSON.stringify(DEFAULT_LOCATION));
         setLoading(false);
       },
       {
@@ -68,9 +79,7 @@ export default function LocationPicker() {
       </button>
 
       {error && (
-        <p className="mt-1 text-xs text-red-500">
-          {error}
-        </p>
+        <p className="mt-1 text-xs text-red-500">{error}</p>
       )}
     </div>
   );

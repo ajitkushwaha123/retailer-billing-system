@@ -24,7 +24,7 @@ const DemandForcasting = () => {
         const { lat, lon } = JSON.parse(saved);
 
         const res = await fetch(
-          `/api/forecasting/weather/realtime?lat=${lat}&lon=${lon}`
+          `/api/forecasting/weather/realtime?lat=28.60943933609405&lon=77.03761652309917`
         );
 
         if (!res.ok) {
@@ -45,6 +45,7 @@ const DemandForcasting = () => {
 
   return (
     <div className="space-y-6 p-3">
+      <LocationPicker />
       <WeatherSectionCards
         weather={weather}
         loading={loading}
