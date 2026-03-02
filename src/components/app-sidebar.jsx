@@ -34,7 +34,7 @@ import {
 } from "@/components/ui/sidebar";
 import { TeamSwitcher } from "./team-switcher";
 import { useOrganization } from "@clerk/nextjs";
-import { GalleryVerticalEnd, Library } from "lucide-react";
+import { AirVent, GalleryVerticalEnd, Library, StarHalf } from "lucide-react";
 
 const data = {
   user: {
@@ -43,6 +43,11 @@ const data = {
     avatar: "/avatars/shadcn.jpg",
   },
   navMain: [
+    {
+      title: "Demand Forcasting",
+      url: "/demand-forecasting",
+      icon: StarHalf,
+    },
     {
       title: "Billing",
       url: "/billing",

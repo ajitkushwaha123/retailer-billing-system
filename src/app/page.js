@@ -6,6 +6,7 @@ import { PaymentChart } from "@/components/dashboard/payment-chart";
 import ProductStats from "@/components/dashboard/product-stats";
 import { SectionCards } from "@/components/section-cards";
 import Scraper from "./(root)/scrape/page";
+import DemandForcasting from "@/components/focasting";
 
 export default function Page() {
   const range = {
@@ -27,13 +28,12 @@ export default function Page() {
               <ChartAreaInteractive range={range} />
             </div>
           </div>
-
-          {/* <div>
-            <Scraper />
-          </div> */}
-
           <div className="px-4 lg:px-6">
             <ProductStats range={range} />
+          </div>
+
+          <div className="px-4 lg:px-6">
+            <DemandForcasting />
           </div>
         </div>
       </div>
