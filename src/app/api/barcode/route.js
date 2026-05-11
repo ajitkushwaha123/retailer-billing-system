@@ -21,7 +21,7 @@ export const POST = async (req) => {
     );
 
     if (!product) {
-      await fetch("https://e209-14-139-226-237.ngrok-free.app/emit", {
+      await fetch(`${process.env.NEXT_PUBLIC_SOCKET_URL}/emit`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -39,7 +39,7 @@ export const POST = async (req) => {
       );
     }
 
-    await fetch("https://e209-14-139-226-237.ngrok-free.app/emit", {
+    await fetch(`${process.env.NEXT_PUBLIC_SOCKET_URL}/emit`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

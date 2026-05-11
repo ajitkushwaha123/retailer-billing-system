@@ -6,7 +6,7 @@ const isPublicRoute = createRouteMatcher([
   "/register(.*)",
   "/api/public(.*)",
   "/api/notification/send-template",
-  "/api/barcode",
+  "/api/barcode(.*)",
   "/api/scrape"
 ]);
 
