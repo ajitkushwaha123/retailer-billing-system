@@ -10,6 +10,7 @@ const OrderItemSchema = new mongoose.Schema(
     quantity: { type: Number, required: true, min: 1 },
     sellingPrice: { type: Number, required: true },
     total: { type: Number, required: true },
+    imageUrl: { type: String },
   },
   { _id: false }
 );

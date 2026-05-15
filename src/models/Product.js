@@ -33,6 +33,9 @@ const ProductSchema = new mongoose.Schema(
     metadata: { type: mongoose.Schema.Types.Mixed },
     totalSold: { type: Number, default: 0 },
 
+    demand_category: [{ type: String }],
+    base_demand_score: { type: Number, default: 50 },
+
     organizationId: { type: String, required: true },
     userId: { type: String, required: true },
   },

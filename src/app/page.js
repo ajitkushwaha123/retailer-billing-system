@@ -31,10 +31,6 @@ export default function Page() {
           <div className="px-4 lg:px-6">
             <ProductStats range={range} />
           </div>
-
-          <div className="px-4 lg:px-6">
-            <DemandForcasting />
-          </div>
         </div>
       </div>
     </div>
